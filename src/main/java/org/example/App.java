@@ -14,13 +14,16 @@ public class App {
         DecimalFormat formatterForOnlyOneNumber = new DecimalFormat("00.00");
         int[] priser = new int[24];
         int ArrayLength = priser.length;
-        int maxPrice = 0;
+        int maxPrice;
         int maxPriceHour = 0;
         int maxPriceSecondHour = 1;
-        int minPrice = 0;
+        int minPrice;
         int minPriceHour = 0;
         int minPriceSecondHour = 1;
+
         double medelPrice = 0;
+
+
         String menu = """
                 Elpriser
                 ========
@@ -66,21 +69,23 @@ public class App {
                             + formatter.format(minPriceSecondHour)
                             + ", "
                             + minPrice
-                            + " öre/kwh");
+                            + " öre/kWh");
                     System.out.println("Högsta pris: "
                             + formatter.format(maxPriceHour)
                             + "-"
                             + formatter.format(maxPriceSecondHour)
                             + ", "
                             + maxPrice
-                            + " öre/kwh");
-                    System.out.println("MedelPris: "
+                            + " öre/kWh");
+                    System.out.println("Medelpris: "
                             + formatterForOnlyOneNumber.format(medelPrice / 24)
-                            + " öre/kwh");
+                            + " öre/kWh");
 
                 }
                 case "3" -> {
                     for (int i = 0; i < ArrayLength; i++) {
+
+
                            System.out.println(formatter.format(i)
                                 + "-"
                                 + formatter.format(i + 1)
