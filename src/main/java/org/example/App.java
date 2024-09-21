@@ -1,6 +1,7 @@
 package org.example;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Scanner;
@@ -8,11 +9,12 @@ import java.util.Scanner;
 public class App {
 
     public static void main(String[] args) {
-        var swedishLocale = Locale.of("sv", "SE");
-        Locale.setDefault(swedishLocale);
+
         Scanner sc = new Scanner(System.in);
         DecimalFormat formatter = new DecimalFormat("00");
         DecimalFormat formatterForOnlyOneNumber = new DecimalFormat("00.00");
+        DecimalFormatSymbols format = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat formatForFloat = new DecimalFormat("0,0",format);
         int[] priser = new int[24];
         int ArrayLength = priser.length;
         int maxPrice = Integer.MAX_VALUE;
@@ -26,8 +28,11 @@ public class App {
         int[] sortPrices = new int[24];
         int sortPricesNextSpot = 0;
         int hourSorter = 0;
-        int hourWithHighestNumber;
 
+        int theFourCheapestHours = 0;
+        int comparingFourHours = 0;
+        int cheapestHoursTime = 0;
+        float medelPris4h = 0;
         String menu = """
                 Elpriser
                 ========
@@ -91,8 +96,6 @@ public class App {
                     sortPrices = Arrays.stream(priser).toArray();
                     // Sen sorterar vi alla number i sortPrices så den första numbered har lägst tal och sista har högst tal
                     Arrays.sort(sortPrices);
-                    System.out.println(sortPrices[0]);
-                    System.out.println(sortPrices[23]);
                     for(int i = 23;i > 0;i--) {
                         for(int j = 0;j < ArrayLength;j++) {
                             if(sortPrices[i] == priser[j]) {
@@ -104,7 +107,19 @@ public class App {
                     }
                 }
                 case "4" -> {
-
+                    // Först så lägger jag till dom 4 första timernas pris i en int
+                    theFourCheapestHours = (priser[0]+priser[1]+priser[2]+priser[3]);
+                    // Sen har jag en int som man lägger in dom kommande 4 timmarna
+                    for(int i = 0;i < ArrayLength - 4;i++) {
+                        comparingFourHours = priser[i]+priser[i+1]+priser[i+2]+priser[i+3];
+                        if(theFourCheapestHours > comparingFourHours) {
+                            theFourCheapestHours = comparingFourHours;
+                            cheapestHoursTime = i;
+                            medelPris4h = theFourCheapestHours / 4f;
+                        }
+                    }
+                    System.out.println("Påbörja laddning klockan "+cheapestHoursTime);
+                    System.out.printf("Medelpris 4h: %.1f öre/kWh\n",medelPris4h);
                 }
                 case "e","E" -> {
                     return;
