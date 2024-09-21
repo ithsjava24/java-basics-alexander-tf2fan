@@ -1,6 +1,7 @@
 package org.example;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -14,15 +15,18 @@ public class App {
         DecimalFormat formatterForOnlyOneNumber = new DecimalFormat("00.00");
         int[] priser = new int[24];
         int ArrayLength = priser.length;
-        int maxPrice;
+        int maxPrice = Integer.MAX_VALUE;
         int maxPriceHour = 0;
         int maxPriceSecondHour = 1;
-        int minPrice;
+        int minPrice = Integer.MIN_VALUE;
         int minPriceHour = 0;
         int minPriceSecondHour = 1;
-
         double medelPrice = 0;
 
+        int[] sortPrices = new int[24];
+        int sortPricesNextSpot = 0;
+        int hourSorter = 0;
+        int hourWithHighestNumber;
 
         String menu = """
                 Elpriser
@@ -83,15 +87,20 @@ public class App {
 
                 }
                 case "3" -> {
-                    for (int i = 0; i < ArrayLength; i++) {
-
-
-                           System.out.println(formatter.format(i)
-                                + "-"
-                                + formatter.format(i + 1)
-                                + " "
-                                + priser[i]
-                                + " öre");
+                    // Överför alla number från priser[] till sortPrices[]
+                    sortPrices = Arrays.stream(priser).toArray();
+                    // Sen sorterar vi alla number i sortPrices så den första numbered har lägst tal och sista har högst tal
+                    Arrays.sort(sortPrices);
+                    System.out.println(sortPrices[0]);
+                    System.out.println(sortPrices[23]);
+                    for(int i = 23;i > 0;i--) {
+                        for(int j = 0;j < ArrayLength;j++) {
+                            if(sortPrices[i] == priser[j]) {
+                                hourSorter = j;
+                                sortPricesNextSpot = priser[j];
+                                System.out.printf("%02d-%02d %d öre\n",hourSorter,hourSorter+1,sortPricesNextSpot);
+                            }
+                        }
                     }
                 }
                 case "4" -> {
