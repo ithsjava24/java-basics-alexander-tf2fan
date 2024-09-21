@@ -32,7 +32,6 @@ public class App {
                 e. Avsluta
                 """;
 
-        System.out.println(menu);
         String menuInput;
         while (true) {
             System.out.println(menu);
@@ -41,18 +40,23 @@ public class App {
                 case "1" -> {
                     System.out.println("Skriv in el priset mellan dom här tidpunkterna");
                     for (int i = 0; i < ArrayLength; i++) {
-                        System.out.println(formatter.format(i) + "-" + formatter.format(i + 1) + " h");
+                        System.out.printf("%02d-%02d\n",i,i+1);
                         priser[i] = sc.nextInt();
                     }
 
                 }
                 case "2" -> {
-                    firstValue = (priser[0]);
+                    minPrice = priser[0];
                     for (int i = 0; i < ArrayLength; i++) {
-                        if ((priser[i]) < firstValue || (priser[i]) < minPrice) {
-                            minPrice = (priser[i]);
+                        if (priser[i] < minPrice) {
+                            minPrice = priser[i];
                             minPriceHour = i;
                             minPriceSecondHour = (i + 1);
+                        }
+                        if (priser[i] > minPrice && priser [i] > maxPrice) {
+                            maxPrice = priser[i];
+                            maxPriceHour = i;
+                            maxPriceSecondHour = (i + 1);
                         }
                         medelPrice = medelPrice + priser[i];
                     }
@@ -89,10 +93,11 @@ public class App {
 
                 }
                 case "e","E" -> {
-                    break;
+                    return;
                 }
                 default -> {
                     System.out.println("Invalid input");
+                    System.out.println("Your wrote in: "+menuInput);
                 }
             }
         }
