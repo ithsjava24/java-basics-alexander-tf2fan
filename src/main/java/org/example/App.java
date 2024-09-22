@@ -1,7 +1,5 @@
 package org.example;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Scanner;
@@ -11,28 +9,31 @@ public class App {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        DecimalFormat formatter = new DecimalFormat("00");
-        DecimalFormat formatterForOnlyOneNumber = new DecimalFormat("00.00");
-        DecimalFormatSymbols format = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat formatForFloat = new DecimalFormat("0,0",format);
+        Locale swedishLocale = new Locale("sv","SV");
+        Locale.setDefault(swedishLocale);
         int[] priser = new int[24];
         int ArrayLength = priser.length;
         int maxPrice = Integer.MAX_VALUE;
-        int maxPriceHour = 0;
-        int maxPriceSecondHour = 1;
         int minPrice = Integer.MIN_VALUE;
-        int minPriceHour = 0;
-        int minPriceSecondHour = 1;
+        String maxPrice1stHourAnd2ndHour = "";
+        String minPrice1stHourAnd2ndHour = "";
         double medelPrice = 0;
-
+        String medelPriceSum = "";
+        // Variabler för att sortera priserna case "3"
         int[] sortPrices = new int[24];
         int sortPricesNextSpot = 0;
         int hourSorter = 0;
-
+        // Variabler för dom 4 billigaste timmarna case "4"
         int theFourCheapestHours = 0;
         int comparingFourHours = 0;
         int cheapestHoursTime = 0;
         float medelPris4h = 0;
+        // Variabler för visualiseringen case "5"
+        int maxPriceForChart = Integer.MIN_VALUE;
+        float maxPriceIn6thOfTheValue = 0;
+        int spaceFor6thOfTheMaxValue = 0;
+        int starFor6thOfTheMaxValue = 0;
+        // TODO: Gör så att dom variabler som går att internalize inuti case ska läggas in i dom.
         String menu = """
                 Elpriser
                 ========
@@ -62,33 +63,38 @@ public class App {
                     for (int i = 0; i < ArrayLength; i++) {
                         if (priser[i] < minPrice) {
                             minPrice = priser[i];
-                            minPriceHour = i;
-                            minPriceSecondHour = (i + 1);
+                            minPrice1stHourAnd2ndHour = String.format("%02d-%02d",i,i+1);
                         }
                         if (priser[i] > maxPrice) {
                             maxPrice = priser[i];
-                            maxPriceHour = i;
-                            maxPriceSecondHour = (i + 1);
+                            maxPrice1stHourAnd2ndHour = String.format("%02d-%02d",i,i+1);
                         }
                         medelPrice = medelPrice + priser[i];
                     }
-                    System.out.println("Lägsta pris: "
-                            + formatter.format(minPriceHour)
-                            + "-"
-                            + formatter.format(minPriceSecondHour)
-                            + ", "
-                            + minPrice
-                            + " öre/kWh");
-                    System.out.println("Högsta pris: "
-                            + formatter.format(maxPriceHour)
-                            + "-"
-                            + formatter.format(maxPriceSecondHour)
-                            + ", "
-                            + maxPrice
-                            + " öre/kWh");
-                    System.out.println("Medelpris: "
-                            + formatterForOnlyOneNumber.format(medelPrice / 24)
-                            + " öre/kWh");
+                    medelPrice = medelPrice / 24f;
+                    medelPriceSum = String.format("%.2f",(medelPrice));
+                    System.out.print("Lägsta pris: "+minPrice1stHourAnd2ndHour+", "+minPrice+" öre/kWh"+"\n");
+                    System.out.print("Högsta pris: "+maxPrice1stHourAnd2ndHour+", "+maxPrice+" öre/kWh"+"\n");
+                    System.out.print("Medelpris: "+medelPriceSum+" öre/kWh"+"\n");
+
+                    // Vad du ser längre ner är kod som testerna vägrade att acceptera.
+//                    System.out.println("Lägsta pris: "
+//                            + formatter.format(minPriceHour)
+//                            + "-"
+//                            + formatter.format(minPriceSecondHour)
+//                            + ", "
+//                            + minPrice
+//                            + " öre/kWh");
+//                    System.out.println("Högsta pris: "
+//                            + formatter.format(maxPriceHour)
+//                            + "-"
+//                            + formatter.format(maxPriceSecondHour)
+//                            + ", "
+//                            + maxPrice
+//                            + " öre/kWh");
+//                    System.out.println("Medelpris: "
+//                            + formatterForOnlyOneNumber.format(medelPrice / 24)
+//                            + " öre/kWh");
 
                 }
                 case "3" -> {
@@ -120,6 +126,30 @@ public class App {
                     }
                     System.out.println("Påbörja laddning klockan "+cheapestHoursTime);
                     System.out.printf("Medelpris 4h: %.1f öre/kWh\n",medelPris4h);
+                }
+                case "5" -> {
+                    /* Så vi ska ha visualisering av alla priser ut av alla tider. Har en idea. Exemplet
+                    som dom visade har 6 punkter för att vissa hur högt priset är. Vilket menas att dom tog det
+                    högsta priset som fanns, delade up den siffran i 6, och sen see hur många av dom delarna som
+                    passade in i det priset som finns i den tidpunkten.
+                    Nu vet jag hur jag ska kolla om hur många punkter en tidpunkt ska ha.
+                     */
+                    // Först så hitta jag den högsta värdet i array.
+                    for (int i = 0;i < ArrayLength;i++) {
+                        if(maxPriceForChart < priser[i]) {
+                            maxPriceForChart = priser[i];
+                        }
+                    }
+                    // Sen tar jag det värdet och lägger en 6th del av den i en variable
+                    maxPriceIn6thOfTheValue = maxPriceForChart / 6f;
+                    /* Nu vet jag hur jag ska lägga in punkterna och dom tomma ställena.
+
+                     */
+                    for (int i = 0;i < 6;i++) {
+                        for (int j = 0;j < ArrayLength;j++) {
+
+                        }
+                    }
                 }
                 case "e","E" -> {
                     return;
