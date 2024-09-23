@@ -28,14 +28,6 @@ public class App {
         int comparingFourHours = 0;
         int cheapestHoursTime = 0;
         float medelPris4h = 0;
-        // Variabler för visualiseringen case "5"
-        int maxPriceForChart = Integer.MIN_VALUE;
-        int minPriceForChart = Integer.MAX_VALUE;
-        int maxPriceForChartLength = 0;
-        int minPriceForChartLength = 0;
-        boolean highestNumberHasMoreCharacter = true;
-        StringBuilder amountOfSpace = new StringBuilder();
-        StringBuilder tempString = new StringBuilder();
         // TODO: Gör så att dom variabler som går att internalize inuti case ska läggas in i dom.
         String menu = """
                 Elpriser
@@ -61,6 +53,7 @@ public class App {
                     System.out.println(sc.nextLine());
                 }
                 case "2" -> {
+                    medelPrice = 0;
                     minPrice = Integer.MAX_VALUE;
                     maxPrice = Integer.MIN_VALUE;
                     for (int i = 0; i < ArrayLength; i++) {
@@ -118,87 +111,21 @@ public class App {
                 case "4" -> {
                     // Först så lägger jag till dom 4 första timernas pris i en int
                     theFourCheapestHours = (priser[0]+priser[1]+priser[2]+priser[3]);
-                    // Sen har jag en int som man lägger in dom kommande 4 timmarna
-                    for(int i = 0;i < ArrayLength - 4;i++) {
+                    medelPris4h = (float) theFourCheapestHours / 4;
+                    for(int i = 0;i < 21;i++) {
                         comparingFourHours = priser[i]+priser[i+1]+priser[i+2]+priser[i+3];
                         if(theFourCheapestHours > comparingFourHours) {
                             theFourCheapestHours = comparingFourHours;
                             cheapestHoursTime = i;
-                            medelPris4h = theFourCheapestHours / 4f;
+                            medelPris4h = (float) theFourCheapestHours / 4;
                         }
                     }
-                    System.out.println("Påbörja laddning klockan "+cheapestHoursTime);
-                    System.out.printf("Medelpris 4h: %.1f öre/kWh\n",medelPris4h);
+                    System.out.print(String.format("Påbörja laddning klockan %d\n",cheapestHoursTime));
+                    System.out.printf(String.format("Medelpris 4h: %.1f öre/kWh\n",medelPris4h));
                 }
                 case "5" -> {
-                    /* Så vi ska ha visualisering av alla priser ut av alla tider. Har en idea. Exemplet
-                    som dom visade har 6 punkter för att vissa hur högt priset är. Vilket menas att dom tog det
-                    högsta priset som fanns, delade up den siffran i 6, och sen see hur många av dom delarna som
-                    passade in i det priset som finns i den tidpunkten.
-                    Nu vet jag hur jag ska kolla om hur många punkter en tidpunkt ska ha.
-                     */
-                    // Först så hitta jag den högsta värdet i array.
-                    for (int i = 0;i < ArrayLength;i++) {
-                        if(maxPriceForChart < priser[i]) {
-                            maxPriceForChart = priser[i];
-                        } else if(minPriceForChart > priser[i]) {
-                            minPriceForChart = priser[i];
-                        }
-                    }
-                    // Fixar 2 variabler som kollar hur många character båda siffrorna har
-                    maxPriceForChartLength = Integer.toString(maxPriceForChart).length();
-                    minPriceForChartLength = Integer.toString(minPriceForChart).length();
-                    // Sen kollar jag vilken siffra har mest character i sig. Högsta eller lägsta siffran
-                    if(maxPriceForChartLength > minPriceForChartLength) {
-                        highestNumberHasMoreCharacter = true;
-                        for(int i = minPriceForChartLength;i < maxPriceForChartLength;i++) {
-                            amountOfSpace.append(" ");
-                        }
-                    } else if(maxPriceForChartLength < minPriceForChartLength){
-                        highestNumberHasMoreCharacter = false;
-                        for(int i = maxPriceForChartLength;i < minPriceForChartLength;i++){
-                            amountOfSpace.append(" ");
-                        }
-                    } else {
-                        for(int i = 0;i < maxPriceForChartLength;i++) {
-                            highestNumberHasMoreCharacter = true;
-                            amountOfSpace.append(" ");
-                        }
-                    }
-                    /* Nu vet jag hur jag ska lägga in punkterna och dom tomma ställena.
-                     */
-                    for (int i = 6;i > 0;i--) {
-                        tempString.setLength(0);
-                        for (int j = 0;j < ArrayLength;j++) {
-                                if ((float) priser[j] / 6 * i <= (float) maxPriceForChart / 6 * i && (float) priser[j] / 6 * i > (float) maxPriceForChart / 6 * (i - 1)) {
-                                    tempString.append("  x");
-                                }
-                        }
-                        if(i == 6 && highestNumberHasMoreCharacter) {
-                            System.out.println(+maxPriceForChart+ "|" + tempString.toString());
-                        } else if(i == 6) {
-                            System.out.println(amountOfSpace.toString() + minPriceForChart + "|" + tempString.toString());
-                        } else if(i == 1 && !highestNumberHasMoreCharacter) {
-                            System.out.println(minPriceForChart+"|" + tempString);
-                        } else if(i == 1 && highestNumberHasMoreCharacter) {
-                        System.out.println(amountOfSpace.toString() + minPriceForChart + "|" + tempString.toString());
-                        } else {
-                        System.out.println(amountOfSpace.toString()+"  |"+tempString.toString());
-                        }
-                    }
-                    System.out.println(amountOfSpace.toString()
-                            +"  |------------------------------------------------------------------------\n"
-                            +amountOfSpace.toString()
-                            +"  | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23");
-
-                    System.out.println("530| x x x\n" +
-                            " | x x x x x x\n" +
-                            " | x x x x x x x x x x x x x x\n" +
-                            " | x x x x x x x x x x x x x x x\n" +
-                            " | x x x x x x x x x x x x x x x x x x x x x x x\n" +
-                            " 40| x x x x x x x x x x x x x x x x x x x x x x x x\n" +
-                            " |------------------------------------------------------------------------\n");
-
+                    // Misslyckad metod som inte ser fint ut.
+                    visualsering(ArrayLength, priser);
                 }
                 case "e","E" -> {
                     return;
@@ -207,6 +134,87 @@ public class App {
                 }
             }
         }
+    }
+
+    private static void visualsering(int ArrayLength, int[] priser) {
+        // Variabler för visualiseringen case "5"
+        int maxPriceForChart = Integer.MIN_VALUE;
+        int minPriceForChart = Integer.MAX_VALUE;
+        int convertPriceForChartIfMinus = 0;
+        int maxPriceForChartLength = 0;
+        int minPriceForChartLength = 0;
+        boolean highestNumberHasMoreCharacter = true;
+        StringBuilder amountOfSpace = new StringBuilder();
+        StringBuilder tempString = new StringBuilder();
+                    /* Så vi ska ha visualisering av alla priser ut av alla tider. Har en idea. Exemplet
+                    som dom visade har 6 punkter för att vissa hur högt priset är. Vilket menas att dom tog det
+                    högsta priset som fanns, delade up den siffran i 6, och sen see hur många av dom delarna som
+                    passade in i det priset som finns i den tidpunkten.
+                    Nu vet jag hur jag ska kolla om hur många punkter en tidpunkt ska ha.
+                     */
+        // Först så hitta jag den högsta värdet i array.
+        for (int i = 0; i < ArrayLength; i++) {
+            if (maxPriceForChart < priser[i]) {
+                maxPriceForChart = priser[i];
+            } else if (minPriceForChart > priser[i]) {
+                minPriceForChart = priser[i];
+            }
+        }
+        // Fixar 2 variabler som kollar hur många character båda siffrorna har. Också så måste jag konverta alla minus
+        // Till plus variabler.
+        if (maxPriceForChart < 0) {
+            convertPriceForChartIfMinus = convertPriceForChartIfMinus - maxPriceForChart;
+            maxPriceForChartLength = Integer.toString(convertPriceForChartIfMinus).length();
+        }
+        if (minPriceForChart < 0) {
+            convertPriceForChartIfMinus = convertPriceForChartIfMinus - minPriceForChart;
+            minPriceForChartLength = Integer.toString(convertPriceForChartIfMinus).length();
+        }
+        maxPriceForChartLength = Integer.toString(maxPriceForChart).length();
+        minPriceForChartLength = Integer.toString(minPriceForChart).length();
+
+        // Sen kollar jag vilken siffra har mest character i sig. Högsta eller lägsta siffran
+        if(maxPriceForChartLength > minPriceForChartLength) {
+            highestNumberHasMoreCharacter = true;
+            for(int i = minPriceForChartLength;i < maxPriceForChartLength;i++) {
+                amountOfSpace.append(" ");
+            }
+        } else if(maxPriceForChartLength < minPriceForChartLength){
+            highestNumberHasMoreCharacter = false;
+            for(int i = maxPriceForChartLength;i < minPriceForChartLength;i++){
+                amountOfSpace.append(" ");
+            }
+        } else {
+            for(int i = 0;i < maxPriceForChartLength;i++) {
+                highestNumberHasMoreCharacter = true;
+                amountOfSpace.append(" ");
+            }
+        }
+        /* Nu vet jag hur jag ska lägga in punkterna och dom tomma ställena.
+         */
+        for (int i = 6;i > 0;i--) {
+            tempString.setLength(0);
+            for (int j = 0; j < ArrayLength; j++) {
+                    if ((float) priser[j] / 6 * i <= (float) maxPriceForChart / 6 * i && (float) priser[j] / 6 * i > (float) maxPriceForChart / 6 * (i - 1)) {
+                        tempString.append("  x");
+                    }
+            }
+            if(i == 6 && highestNumberHasMoreCharacter) {
+                System.out.println(+maxPriceForChart+ "|" + tempString.toString());
+            } else if(i == 6) {
+                System.out.println(amountOfSpace.toString() + minPriceForChart + "|" + tempString.toString());
+            } else if(i == 1 && !highestNumberHasMoreCharacter) {
+                System.out.println(minPriceForChart+"|" + tempString);
+            } else if(i == 1 && highestNumberHasMoreCharacter) {
+            System.out.println(amountOfSpace.toString() + minPriceForChart + "|" + tempString.toString());
+            } else {
+            System.out.println(amountOfSpace.toString()+"  |"+tempString.toString());
+            }
+        }
+        System.out.println(amountOfSpace.toString()
+                +"  |------------------------------------------------------------------------\n"
+                +amountOfSpace.toString()
+                +"  | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23");
     }
 
 //    public static double[] Inmating(double[] priser) {
