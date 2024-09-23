@@ -30,9 +30,12 @@ public class App {
         float medelPris4h = 0;
         // Variabler för visualiseringen case "5"
         int maxPriceForChart = Integer.MIN_VALUE;
-        float maxPriceIn6thOfTheValue = 0;
-        int spaceFor6thOfTheMaxValue = 0;
-        int starFor6thOfTheMaxValue = 0;
+        int minPriceForChart = Integer.MAX_VALUE;
+        int maxPriceForChartLength = 0;
+        int minPriceForChartLength = 0;
+        boolean highestNumberHasMoreCharacter = true;
+        StringBuilder amountOfSpace = new StringBuilder();
+        StringBuilder tempString = new StringBuilder();
         // TODO: Gör så att dom variabler som går att internalize inuti case ska läggas in i dom.
         String menu = """
                 Elpriser
@@ -138,18 +141,64 @@ public class App {
                     for (int i = 0;i < ArrayLength;i++) {
                         if(maxPriceForChart < priser[i]) {
                             maxPriceForChart = priser[i];
+                        } else if(minPriceForChart > priser[i]) {
+                            minPriceForChart = priser[i];
                         }
                     }
-                    // Sen tar jag det värdet och lägger en 6th del av den i en variable
-                    maxPriceIn6thOfTheValue = maxPriceForChart / 6f;
+                    // Fixar 2 variabler som kollar hur många character båda siffrorna har
+                    maxPriceForChartLength = Integer.toString(maxPriceForChart).length();
+                    minPriceForChartLength = Integer.toString(minPriceForChart).length();
+                    // Sen kollar jag vilken siffra har mest character i sig. Högsta eller lägsta siffran
+                    if(maxPriceForChartLength > minPriceForChartLength) {
+                        highestNumberHasMoreCharacter = true;
+                        for(int i = minPriceForChartLength;i < maxPriceForChartLength;i++) {
+                            amountOfSpace.append(" ");
+                        }
+                    } else if(maxPriceForChartLength < minPriceForChartLength){
+                        highestNumberHasMoreCharacter = false;
+                        for(int i = maxPriceForChartLength;i < minPriceForChartLength;i++){
+                            amountOfSpace.append(" ");
+                        }
+                    } else {
+                        for(int i = 0;i < maxPriceForChartLength;i++) {
+                            highestNumberHasMoreCharacter = true;
+                            amountOfSpace.append(" ");
+                        }
+                    }
                     /* Nu vet jag hur jag ska lägga in punkterna och dom tomma ställena.
-
                      */
-                    for (int i = 0;i < 6;i++) {
+                    for (int i = 6;i > 0;i--) {
+                        tempString.setLength(0);
                         for (int j = 0;j < ArrayLength;j++) {
-
+                                if ((float) priser[j] / 6 * i <= (float) maxPriceForChart / 6 * i && (float) priser[j] / 6 * i > (float) maxPriceForChart / 6 * (i - 1)) {
+                                    tempString.append("  x");
+                                }
+                        }
+                        if(i == 6 && highestNumberHasMoreCharacter) {
+                            System.out.println(+maxPriceForChart+ "|" + tempString.toString());
+                        } else if(i == 6) {
+                            System.out.println(amountOfSpace.toString() + minPriceForChart + "|" + tempString.toString());
+                        } else if(i == 1 && !highestNumberHasMoreCharacter) {
+                            System.out.println(minPriceForChart+"|" + tempString);
+                        } else if(i == 1 && highestNumberHasMoreCharacter) {
+                        System.out.println(amountOfSpace.toString() + minPriceForChart + "|" + tempString.toString());
+                        } else {
+                        System.out.println(amountOfSpace.toString()+"  |"+tempString.toString());
                         }
                     }
+                    System.out.println(amountOfSpace.toString()
+                            +"  |------------------------------------------------------------------------\n"
+                            +amountOfSpace.toString()
+                            +"  | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23");
+
+                    System.out.println("530| x x x\n" +
+                            " | x x x x x x\n" +
+                            " | x x x x x x x x x x x x x x\n" +
+                            " | x x x x x x x x x x x x x x x\n" +
+                            " | x x x x x x x x x x x x x x x x x x x x x x x\n" +
+                            " 40| x x x x x x x x x x x x x x x x x x x x x x x x\n" +
+                            " |------------------------------------------------------------------------\n");
+
                 }
                 case "e","E" -> {
                     return;
